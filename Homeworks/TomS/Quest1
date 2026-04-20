@@ -1,0 +1,5 @@
+def rectan(x,y):
+    return x*y
+len_r=int(input("Введите длину : "))
+wid_r=int(input("Введите ширину : "))
+print("Площадь : ",rectan(len_r,wid_r))
