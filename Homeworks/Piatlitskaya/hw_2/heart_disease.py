@@ -1,6 +1,8 @@
 import pandas as pd
 import matplotlib.pyplot as plt
-import numpy as np
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import StandardScaler
+
 
 #  1. file reading and validation on empty values
 file_path = '../../../datasets/heart.csv'
@@ -14,8 +16,8 @@ pd.set_option('display.width', None)
 pd.set_option('display.max_colwidth', None)
 
 print('Initial DataFrame\n', df, '\n')
-print(f'missing data in rows: \n{missing_data_in_rows}', '\n')
-print(f'total missing data: {total_missing_data}', '\n')
+print(f'Missing data in rows: \n{missing_data_in_rows}', '\n')
+print(f'Total missing data: {total_missing_data}', '\n')
 
 
 sick_patients = df[df['target'] == 1]
@@ -58,30 +60,34 @@ plt.show()
 #  4. sex attribute converting and one-hot encoding applying
 df_converted = df.copy()
 df_converted['sex'] = df_converted['sex'].map({0: 'female', 1: 'male'})
-print('DataFrame with sex attribute converted \n', df_converted, '\n')
+print('DataFrame with converted sex attribute \n', df_converted, '\n')
 
 df_converted = pd.get_dummies(df_converted, columns=['sex'], dtype='int')
 print('DataFrame with one-hot encoding for sex attribute \n', df_converted, '\n')
 
 
 #   5. average cholesterol (chol) level calculation
-chol_sick = sick_patients['chol'].sum() / len(sick_patients)
-chol_healthy = healthy_patients['chol'].sum() / len(healthy_patients)
+chol_sick = sick_patients['chol'].mean().round(3)
+chol_healthy = healthy_patients['chol'].mean().round(3)
 
-print(f'chol for sick patients: {chol_sick}')
-print(f'chol for healthy patients: {chol_healthy} \n')
+print(f'Mean value of chol for sick patients: {chol_sick}')
+print(f'Mean value of chol for healthy patients: {chol_healthy} \n')
 
 
-#  6. normalization of the age, trestbps, chol, thalach features
-min_max_normalized_df = df.copy()
-mean_normalized_df = df.copy()
+#  6.1 min-max normalization of the age, trestbps, chol, thalach features
 features = ['age', 'trestbps', 'chol', 'thalach']
+min_max_normalized_df = df.copy()
+scaler_min_max = MinMaxScaler()
 
-for col in features:
-    min_max_normalized_df[col] = (min_max_normalized_df[col] - min_max_normalized_df[col].min()) / (
-        min_max_normalized_df[col].max() - min_max_normalized_df[col].min())
+min_max_normalized_df[features] = scaler_min_max.fit_transform(df[features])
 
-    mean_normalized_df[col] = (mean_normalized_df[col] - mean_normalized_df[col].mean()) / mean_normalized_df[col].std()
+print('DataFrame with min-max normalization \n', min_max_normalized_df)
 
-print('DataFrame with min-max normalization \n', min_max_normalized_df, '\n')
+
+#  6.2 mean normalization/standartization of the age, trestbps, chol, thalach features
+mean_normalized_df = df.copy()
+scaler_mean = StandardScaler()
+
+mean_normalized_df[features] = scaler_mean.fit_transform(df[features])
+
 print('DataFrame with mean normalization \n', mean_normalized_df)
