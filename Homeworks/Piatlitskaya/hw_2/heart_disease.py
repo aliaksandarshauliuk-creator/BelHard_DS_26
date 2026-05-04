@@ -5,8 +5,7 @@ from sklearn.preprocessing import StandardScaler
 
 
 #  1. file reading and validation on empty values
-file_path = '../../../datasets/heart.csv'
-df: pd.DataFrame = pd.read_csv(file_path)
+df: pd.DataFrame = pd.read_csv('heart.csv')
 missing_data_in_rows = df.isna().sum()
 total_missing_data = df.isna().sum().sum()
 #   uncomment line below to print all rows in DF
